@@ -1,11 +1,14 @@
 
 from setuptools import setup
 
-setup(name='virtualhat',
+setup(name='TileBot',
       version='1.0',
-      description='CompE Stub Library',
-      author='Fraida Fund',
-      author_email='ffund@nyu.edu',
-      url='https://github.com/ffund/virtualhat',
-      py_modules=['virtualhat'],
+      description='TileBot Stub Library',
+      author='Carlos Lopez, Juan Contreras, Cesar Escamilla',
+      author_email='cl4366@nyu.edu, jdc655@nyu.edu, ehe222@nyu.edu',
+      url='https://github.com/salamando15/TileBot',
+      py_modules=['TileBot'],
      )
+
+
+
