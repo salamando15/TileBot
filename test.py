@@ -3,6 +3,7 @@
 import smbus
 import time
 import RPI.GPIO as GPIO
+import sys
 
 bus = smbus.SMBus(1) ## i2c device 1 - GPIO pins 2 and 3
 color_ADD = 0x39  ## sensor address
@@ -44,7 +45,7 @@ POFFSET_DL = 0x9E  ## prox offset for down and left photodiodes
 ## Color/ALS Registers
 CDATAL = 0x94 ## Clear Channel low byte data
 CDATAH = 0x95 ##Clear Channel low byte data
-RDATAL 0x96  ##Red Color Channel low byte data
+RDATAL = 0x96  ##Red Color Channel low byte data
 RDATAH = 0x97 ##Red Color Channel high byte data
 GDATAL = 0x98 ## Green  Color Channel low byte data
 GDATAH = 0x99 ##Green Color Channel high byte data
@@ -111,7 +112,9 @@ def write(reg, val):
 ## start up connection
 def begin():
     check = read(ID)
-    if (check != 0xAB) return false
+    if (check != 0xAB):
+         return False
+    print("Starting Program : Raspberry Pi connecting to ADPS9960 with ID ", check)
     write(WTIME, 0xFF) ## set wait time to 2.78 ms
     write(GPULSE,0x8F)  ## set pulse length  to 16 us(bits 7-6) and number of pulses to 16(bits 5-0
     write(PPULSE,0x8F)
@@ -139,14 +142,16 @@ def end():
 def enablePower():
     check = read(ENABLE)
     test = 0b00000001
-    if ((check & test)!=0) return true
+    if ((check & test)!=0):
+        return True
     val = (check |= test)
     return write(ENABLE, val)
 
 def disablePower():
     check = read(ENABLE)
     test = 0b00000001
-    if ((check & test)==0) return true
+    if ((check & test)==0):
+        return True
     val = (check &= 0b11111110)
     return write(ENABLE, val)
 
@@ -154,14 +159,16 @@ def disablePower():
 def enableWait():
     check = read(ENABLE)
     test = 0b00001000
-    if ((check & test)!=0) return true
+    if ((check & test)!=0):
+        return True
     val = (check |= test)
     return write(ENABLE, val)
 }
 def disableWait():
     check = read(ENABLE)
     test = 0b00001000
-    if ((check & test)==0) return true
+    if ((check & test)==0):
+        return True
     val = (check &= 0b11110111)
     return write(ENABLE, val)
 }
@@ -169,14 +176,16 @@ def disableWait():
 def enableGesture():
     check = read(ENABLE)
     test = 0b01000000
-    if ((check & test)!=0) return true
+    if ((check & test)!=0):
+        return True
     val = (check |= test)
     return write(ENABLE, val)
 
 def disableGesture():
     check = read(ENABLE)
     test = 0b01000000
-    if ((check & test)==0) return true
+    if ((check & test)==0):
+        return True
     val = (check &= 0b10111111)
     return write(ENABLE, val)
 
@@ -184,14 +193,16 @@ def disableGesture():
 def enableProx():
     check = read(ENABLE)
     test = 0b00000100
-    if ((check & test)!=0) return true
+    if ((check & test)!=0):
+        return True
     val = (check |= test)
     return write(ENABLE, val)
 
 def disableProx():
     check = read(ENABLE)
     test = 0b00000100
-    if ((check & test)==0) return true
+    if ((check & test)==0):
+        return True
     val = (check &= 0b11111011)
     return write(ENABLE, val)
 
@@ -199,14 +210,16 @@ def disableProx():
 def enableColor():
     check = read(ENABLE)
     test = 0b00000010
-    if ((check & test)!=0) return true
+    if ((check & test)!=0):
+        return True
     val = (check |= test)
     return write(ENABLE, val)
 
 def disableColor():
     check = read(ENABLE)
     test = 0b00000010
-    if ((check & test)==0) return true
+    if ((check & test)==0):
+        return True
     val = (check &= 0b11111101)
     return write(ENABLE, val)
 
@@ -223,10 +236,26 @@ def ColorAvailable():
 
 def readColors():
     colors = []
-    color.append(read(CDATAL))
-    color.append(read(CDATAL))
-    color.append(read(CDATAH))
-    color.append(read(CDATAH))
+    clearData = read(CDATAH)
+    clearData = clearData << 4
+    clearData |= read(CDATAL)
+
+    redData = read(RDATAH)
+    redData = redData << 4
+    redData |= read(RDATAL)
+
+    greenData = read(GDATAH)
+    greenData = greenData << 4
+    greenData |= read(GDATAL)
+
+    blueData = read(BDATAH)
+    blueData = blueData << 4
+    blueData |= read(BDATAL)
+
+    colors.append(redData)
+    colors.append(greenData)
+    colors.append(blueData)
+    colors.append(cleardata)
 
     disableColor()
     return colors
@@ -246,7 +275,6 @@ def readProx():
     disableProx()
     val = (255-check)
     return val
-
 
 begin()
 enableColor()
