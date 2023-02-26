@@ -127,7 +127,7 @@ def begin():
      enablePower()
 
      GPIO.setmode(GPIO.BCM)            # choose BCM or BOARD
-     GPIO.setup(17, GPIO.output, GPIO.PULLUP = TRUE) # set a port/pin as an output
+     GPIO.setup(17, GPIO.output) # set a port/pin as an output
      GPIO.output(17, 1)       # set port/pin value to 1/GPIO.HIGH/True
      #GPIO.output(17, 0)        # et port/pin value to 0/GPIO.LOW/True
 
