@@ -4,7 +4,7 @@ import smbus
 import time
 import RPI.GPIO as GPIO
 
-bus =smbus.SMBus(1) ## i2c device 1 - GPIO pins 2 and 3
+bus = smbus.SMBus(1) ## i2c device 1 - GPIO pins 2 and 3
 color_ADD = 0x39  ## sensor address
 
 ## REGISTER ADRESSES: 8 bit addresses ##
@@ -90,10 +90,12 @@ GFIFO_R = 0xFF  ## gesture FIFO RIGHT value
 ## Config address -->
 commandA = 0b00011011 ## wait enable, ALS and interupts ON
 
-
-
 ## basic read and write functions
 ## read function that returns value success attempt
+## write operation with parameters: device address, register address, value to write
+#       bus.write_byte_data(device, )
+## read operation with 2 parameters: device addres, register address
+#d      data = bus.read_byte_data(device, register
 def read(reg):
     #if(!write(reg)) return
     val = bus.read_byte_data(color_ADD, reg)
@@ -245,27 +247,6 @@ def readProx():
     val = (255-check)
     return val
 
-def turnPowerON():
-    r = getEnable()
-    test = 0b00001000
-    if (r & test) return 0
-    if ((r & test) != 0) return 1
-    r |= 0b00001000
-    return setENABLE(r)
-
-def turnPowerOFF():
-    temp = getEnable()
-    test = 0b00000001
-    conv = 0b11111110
-    if (temp & test) return 0
-    if ((temp & test) == 0) return 1
-    temp &= conv
-    return setENABLE(temp)
-## write operation with parameters: device address, register address, value to write
-#bus.write_byte_data(device, )
-
-## read operation with 2 parameters: device addres, register address
-#data = bus.read_byte_data(device, register)
 
 begin()
 enableColor()
@@ -283,10 +264,3 @@ while True:
     if(milli - lastUpdate > 1000):
         lastUpdate = milli
         print("Last Updated : ", lastUpdate)
-
-##############################################  Gesture Sensor   ##############################################
-
-## baud rate : 115200  source : https://learn.adafruit.com/adafruit-apds9960-breakout/arduino-wiring-and-test
-
-
-############################################## Main Function #############################################
