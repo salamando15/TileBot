@@ -12,6 +12,25 @@ def updateTileState():
 
 #Add color sensor functions here
 
-#Robot Movement Functions
 
-#Add Robot Movement Function here
+#Robot Movement Functions
+def go():
+    pass;
+
+def stop():
+    pass;
+
+def Lturn():
+     pass;
+
+def Rturn():
+     pass;
+
+def switch_direction_forward():
+     pass;
+
+def switch_direction_backward():
+    pass;
+
+def turn_in_place():
+     pass;
