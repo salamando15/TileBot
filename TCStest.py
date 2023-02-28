@@ -1,14 +1,12 @@
 
 #!/usr/bin/python
-import smbus
+import smbus2
 import time
 import RPi.GPIO as GPIO
 import sys
 
-bus = smbus.SMBus(1) ## i2c device 1 - GPIO pins 2 and 3
-color_ADD = 0x29  ## sensor address
-
 ### Configuration Registers
+COMMAND = 1 << 7
 ENABLE = 0x00
 ATIME = 0x01   ## ADC integration time reset value -> 0XFF
 WTIME = 0x03 ## wait time can range from 2.78 ms to 8.54 sec
@@ -49,10 +47,12 @@ def read(reg):
 ## write function: smbus function has parameters device address, register address, value to write
 ## returns
 def write(reg, val):
-    ## command 
-    temp = 5 << 5
-    test = reg | temp
-    bus.write_byte_data(color_ADD, test, val)
+    ## command
+    ## command byte ##
+    temp1 = reg
+    COMMAND |= temp
+    bus.write_byte_data(color_ADD, COMMAND, val)
+    #bus.write_byte_data(color_ADD, COMMAND, )
     time.sleep(0.5)
     val = bus.read_byte_data(color_ADD, reg)
     return val
@@ -63,7 +63,7 @@ def begin():
     GPIO.setup(17, GPIO.OUT) # set a port/pin as an output
     GPIO.setup(27,GPIO.OUT)  ## GPIO Pin 27 as the input to the LED
     GPIO.output(17, 1)       # set port/pin value to 1/GPIO.HIGH/True
-    GPIO.output(27, 1)        # et port/pin value to 0/GPIO.LOW/True
+    GPIO.output(27, 1)        # LED PIN in charge of turning on LED
 
     #write(GPULSE,0x8F)  ## set pulse length  to 16 us(bits 7-6) and number of pulses to 16(bits 5-0
     #write(PPULSE,0x8F)
@@ -77,10 +77,10 @@ def begin():
     enableWait()
     print("Turning ON Wait Feature ", read(ENABLE))
     time.sleep(0.5)
-    write(WTIME, 0xD5) ## set wait time to 204 ms
+    write(WTIME, 0xD5) ## set wait time to 101 ms
     print("Setting wait time to 204 ms : ", read(WTIME))
      ## ADC integration time parameters
-    write(ATIME,0xD5) ## 42 integration cycle --> coutn up to 66804
+    write(ATIME,0xD5) ## 42 integration cycle --> count up to 43008 counts 
     print("Setting ADC time to 42 integration cycles with 101 ms integration time: ", read(ATIME))
      ## ADC Gain parameters
     write(CONTROL,0x02) ## Gain of 16x
@@ -165,11 +165,8 @@ def readColors():
     clearData |= read(CDATAL)
 
     redData = read(RDATAH)
-    print("High Read Data: ", redData)
     redData = redData << 8
-    print("High Read Data Shifted: ", redData)
     redData |= read(RDATAL)
-    print("High Read Data Bitwise with Low Byte ", redData)
 
     greenData = read(GDATAH)
     greenData = greenData << 8
@@ -219,6 +216,30 @@ def ambientLevel(r, g, b):
     illuminance = (-0.32466 * r) + (1.57837 * g) + (-0.73191 * b)
 
     return illuminance
+
+def convertRGB(values): ## function to convert list of raw RGB values to values 0-255
+        temp = []
+        # Avoid divide by zero errors ... if clear = 0 return black
+        if values[3] == 0:  ##
+            return (0, 0, 0)
+
+        # Each color value is normalized to clear, to obtain int values between 0 and 255.
+        # A gamma correction of 2.5 is applied to each value as well, first dividing by 255,
+        # since gamma is applied to values between 0 and 1
+        red = int(pow((int((values[0] / values[3]) * 256) / 255), 2.5) * 255)
+        green = int(pow((int((values[1] / values[3]) * 256) / 255), 2.5) * 255)
+        blue = int(pow((int((values[2] / values[3]) * 256) / 255), 2.5) * 255)
+
+        # Handle possible 8-bit overflow
+        red = min(red, 255)
+        green = min(green, 255)
+        blue = min(blue, 255)
+
+        temp.append(red)
+        temp.append(green)
+        temp.append(blue)
+        return temp
+
 def setIntTime(x): ## set integration time
 
     ## Example: for a 100 ms integration time the device needs to be converted
@@ -226,7 +247,11 @@ def setIntTime(x): ## set integration time
     return write(ATIME, val)
 
 
-begin()
+
+######################################## MAIN PROGRAM TEST ######################
+bus = smbus2.SMBus(1) ## i2c device 1 - GPIO pins 2 and 3
+color_ADD = 0x29  ## sensor address
+begin() ##
 lastUpdate = 0
 while True:
     if ColorAvailable():
@@ -245,7 +270,9 @@ while True:
             lastUpdate = milli
             kelvin = colorTemp(red, green, blue)
             brightness = ambientLevel(red, green, blue)
+            RGB = convertRGB(extract)
             print("Color temperature: ", kelvin)
             print("Ambient Light Level: ", brightness)
+            print("List of RGB values : ", RGB)
             print("Last Updated : ", lastUpdate)
         time.sleep(3)
