@@ -13,7 +13,7 @@ def updateTileState():
 #Color Sensor Functions
 
 ## turn on color sensor
-def active()
+def active():
     pass
 ## set integration time 
 def integration_time(self, val: float):
