@@ -5,21 +5,12 @@
 """
 `adafruit_tcs34725`
 ====================================================
-
 CircuitPython module for the TCS34725 color sensor.
 Ported from the
 `micropython-adafruit-tcs34725 <https://github.com/adafruit/micropython-adafruit-tcs34725>`_
 module by Radomir Dopieralski
 
-
-See examples/tcs34725_simpletest.py for an example of the usage.
-
 * Author(s): Tony DiCola, Carter Nelson
-
-Implementation Notes
---------------------
-
-**Hardware:**
 
 * Adafruit `RGB Color Sensor with IR filter and White LED - TCS34725
   <https://www.adafruit.com/product/1334>`_ (Product ID: 1334)
@@ -33,6 +24,8 @@ Implementation Notes
   https://circuitpython.org/downloads
 
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
+
+* Github link to Repository: https://github.com/adafruit/Adafruit_CircuitPython_TCS34725
 """
 import time
 
@@ -49,24 +42,34 @@ __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_TCS34725.git"
 
 # Register and command constants:
-_COMMAND_BIT = const(0x80)
-_REGISTER_ENABLE = const(0x00)
-_REGISTER_ATIME = const(0x01)
-_REGISTER_AILT = const(0x04)
-_REGISTER_AIHT = const(0x06)
-_REGISTER_ID = const(0x12)
-_REGISTER_APERS = const(0x0C)
-_REGISTER_CONTROL = const(0x0F)
-_REGISTER_SENSORID = const(0x12)
-_REGISTER_STATUS = const(0x13)
-_REGISTER_CDATA = const(0x14)
-_REGISTER_RDATA = const(0x16)
-_REGISTER_GDATA = const(0x18)
-_REGISTER_BDATA = const(0x1A)
-_ENABLE_AIEN = const(0x10)
-_ENABLE_WEN = const(0x08)
-_ENABLE_AEN = const(0x02)
-_ENABLE_PON = const(0x01)
+_COMMAND_BIT = const(0x80)  ## register responsible for selecting registers for read/write operations
+_REGISTER_ENABLE = const(0x00) ##
+_REGISTER_ID = const(0x12) ## device ID
+
+_REGISTER_ATIME = const(0x01)  ## ADC integration time reset value -> 0XFF
+
+## Interrupts Registers
+_REGISTER_AILT = const(0x04)  ## ALS interrupt low thres low byte ** Address 0x05 low thres high byte
+_REGISTER_AIHT = const(0x06)  ## ALS interrupt high thres low byte** Address 0x07 high thres high byte
+_REGISTER_APERS = const(0x0C)  ## Persistence Filters interrupt
+
+
+_REGISTER_CONTROL = const(0x0F)  ## Gain control
+_REGISTER_SENSORID = const(0x12)  ## device ID
+_REGISTER_STATUS = const(0x13)  ## status register
+
+## Color/ALS Registers
+_REGISTER_CDATA = const(0x14)  #### Clear Channel low byte data followed by high byte in next address(0x15)
+_REGISTER_RDATA = const(0x16) #### Red Channel low byte data followed by high byte in next address(0x17)
+_REGISTER_GDATA = const(0x18) ### Green Channel low byte data followed by high byte in next address(0x19)
+_REGISTER_BDATA = const(0x1A) #### Blue Channel low byte data followed by high byte in next address(0x1B)
+
+## Enable Constant
+_ENABLE_AIEN = const(0x10) ## binary representation of 5th LSB bit of ENABLE register responsible for enabling RGBC interrupt
+_ENABLE_WEN = const(0x08)  ## binary representation of 4th LSB bit of ENABLE register responsible for enabling wait feature
+_ENABLE_AEN = const(0x02)  ## binary representation of 2nd LSB bit of ENABLE register responsible for enabling RGBC ADC feature
+_ENABLE_PON = const(0x01) ## binary representation of LSB of ENABLE register responsible for powering ON 
+## Bounds and Set Parameters
 _GAINS = (1, 4, 16, 60)
 _CYCLES = (0, 1, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60)
 _INTEGRATION_TIME_THRESHOLD_LOW = 2.4
