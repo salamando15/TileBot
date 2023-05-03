@@ -85,7 +85,7 @@ def movement(tile_colors):
         elif instruction == 'yellow':
             switch_direction_backward();
             go();
-        sleep(2);
+        time.sleep(2);
         
 
 movement();
