@@ -84,7 +84,7 @@ def movement(tile_colors):
             Rturn();
         elif instruction == 'yellow':
             switch_direction_backward();
-            Lturn();
+            go();
         sleep(2);
         
 
