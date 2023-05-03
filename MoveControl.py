@@ -1,5 +1,5 @@
 
-[import pigpio
+import pigpio
 import time
 import sys
 import RPi.GPIO as GPIO
