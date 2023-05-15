@@ -362,10 +362,3 @@ try:
       taskSuccessOLED();
   else:
       taskFailOLED();
-
-      
-      
-      
-  
-  sys.exit()
-
