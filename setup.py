@@ -7,6 +7,7 @@ setup(name='TileBot',
       author='Carlos Lopez, Juan Contreras, Cesar Escamilla',
       author_email='cl4366@nyu.edu, jdc655@nyu.edu, ehe222@nyu.edu',
       url='https://github.com/salamando15/TileBot',
+      install_requires['pigpio', 'time', 'sys', 'Rpi.GPIO'];
       py_modules=['TileBot'],
      )
 
