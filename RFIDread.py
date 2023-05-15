@@ -34,33 +34,38 @@ def resetIDs():
 
 ## Create a dictionary that saves the RFID cards that come in the package
 ## Each card has a unique ID
-keys = {}
+hosp = {978625901994:"Hospital"}
+school = {637887556276:"School"}
+zoo = {151558501832:"Zoo"}
+mall = {429122065461:"Mall"}
+supermarket = {632930121064:"Seatown"}
+keys = {hosp, school, zoo, mall, supermarket}
 yes_choices = ['yes', 'y']
 no_choices = ['no', 'n']
 reader = SimpleMFRC522()
 
-4
-try:
-    while True:
-        id, text = scan()
-        time.sleep(2)
-        if (text==""):
-            print("The card scanned --> HEXID: %s\nID: %s\nText: %s \n" % (hex(id),id,text))
-            keys.update({id:text})
-            print(keys)
-            continue
-        else:
-            print("The card scanned --> HEXID: %s\nID: %s\nText: %s \n" % (hex(id),id,text))
-            change = input("Would you like to add/rewrite this card? Please enter yes or no: ")
-            if change.lower() in yes_choices:
-                write()
-                continue
-            elif change.lower() in no_choices:
-                print("Please remove the card from the reader")
+def check():
+    try:
+        while True:
+            id, text = scan()
+            time.sleep(2)
+            if (text==""):
+                print("The card scanned --> HEXID: %s\nID: %s\nText: %s \n" % (hex(id),id,text))
+                keys.update({id:text})
+                print(keys)
                 continue
             else:
-                print('Please type yes or no')
-                continue
+                print("The card scanned --> HEXID: %s\nID: %s\nText: %s \n" % (hex(id),id,text))
+                change = input("Would you like to add/rewrite this card? Please enter yes or no: ")
+                if change.lower() in yes_choices:
+                    write()
+                    continue
+                elif change.lower() in no_choices:
+                    print("Please remove the card from the reader")
+                    continue
+                else:
+                    print('Please type yes or no')
+                    continue
 
-except KeyboardInterrupt:
-        GPIO.cleanup()
+    except KeyboardInterrupt:
+            GPIO.cleanup()
