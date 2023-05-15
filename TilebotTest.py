@@ -2,7 +2,7 @@ import pigpio
 import time
 import sys
 
-pi=gpio.pi();
+pi=pigpio.pi();
 pins={'left':12, 'right':13};
 
 def forward():
@@ -11,4 +11,6 @@ def forward():
     print('going forward!');
     
 
-    
+while(True):
+    forward();
+    #time.sleep()    
