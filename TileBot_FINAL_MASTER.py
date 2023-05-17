@@ -201,8 +201,8 @@ def readColor():
 
     color_rgb = list(color_rgb)
     r = color_rgb[0]
-    g = color_rgb[2]
-    b = color_rgb[3]
+    g = color_rgb[1]
+    b = color_rgb[2]
 
     if(r > b ) and (r > g):
         color = "red"
